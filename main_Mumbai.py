@@ -68,31 +68,25 @@ plot_pacf(diff12_Mumbai, lags = 50, ax=axes[1])
 
 plt.show()
 
-fit_1 = ARIMA(Mumbai, order = (0,0,0), seasonal_order=(0,1,1,12)).fit()
-fit_2 = ARIMA(Mumbai, order = (0,0,0), seasonal_order=(1,1,1,12)).fit()
-fit_3 = ARIMA(Mumbai, order = (1,0,0), seasonal_order=(1,1,1,12)).fit()
+fit_1 = ARIMA(Mumbai, order = (0,0,0), seasonal_order=(1,1,1,12)).fit()
+fit_2 = ARIMA(Mumbai, order = (0,0,0), seasonal_order=(2,1,1,12)).fit()
 
 print(fit_1.aicc)
 print(fit_2.aicc)
-print(fit_3.aicc)
 
 print(shapiro(fit_1.resid))
 print(shapiro(fit_2.resid))
-print(shapiro(fit_3.resid))
 
 print(acorr_ljungbox(fit_1.resid, lags=12))
 print(acorr_ljungbox(fit_2.resid, lags=12))
-print(acorr_ljungbox(fit_3.resid, lags=12))
 
-fig, axes = plt.subplots(3, 2)
+fig, axes = plt.subplots(2, 2)
 
 plot_acf(fit_1.resid, ax=axes[0, 0])
 plot_acf(fit_2.resid, ax=axes[1, 0])
-plot_acf(fit_3.resid, ax=axes[2, 0])
 
 axes[0, 1].hist(fit_1.resid, edgecolor='black', bins=50)
 axes[1, 1].hist(fit_2.resid, edgecolor='black', bins=50)
-axes[2, 1].hist(fit_3.resid, edgecolor='black', bins=50)
 
 plt.tight_layout()
 
@@ -110,7 +104,6 @@ matrix_real = [test.iloc[i:i+12] for i in range(p)]
 
 matrix_a = []
 matrix_b = []
-matrix_c = []
 
 for i in range(p):
     
@@ -122,17 +115,14 @@ for i in range(p):
 
         current_train = pd.concat([train, test.iloc[:i]])
     
-    a = ARIMA(current_train, order = (0,0,0), seasonal_order=(0,1,1,12)).fit()
-    b = ARIMA(current_train, order = (0,0,0), seasonal_order=(1,1,1,12)).fit()
-    c = ARIMA(current_train, order = (1,0,0), seasonal_order=(1,1,1,12)).fit()
+    a = ARIMA(current_train, order = (0,0,0), seasonal_order=(1,1,1,12)).fit()
+    b = ARIMA(current_train, order = (0,0,0), seasonal_order=(2,1,1,12)).fit()
 
     matrix_a.append(a.forecast(steps = h))
     matrix_b.append(b.forecast(steps = h))
-    matrix_c.append(c.forecast(steps = h))
 
 matrix_a_values = [x.values for x in matrix_a]
 matrix_b_values = [x.values for x in matrix_b]
-matrix_c_values = [x.values for x in matrix_c]
 
 fig, axes = plt.subplots(2, 2)
 
@@ -141,12 +131,10 @@ i = 0
 real_values = matrix_real[i]
 forecast_a = matrix_a[i]
 forecast_b = matrix_b[i]
-forecast_c = matrix_c[i]
 
 real_values.plot(ax = axes[0,0], label="Real")
-pd.Series(forecast_a).plot(ax = axes[0,0], label="ARIMA(0,0,0)(0,1,1)[12]")
-pd.Series(forecast_b).plot(ax = axes[0,0], label="ARIMA(0,0,0)(1,1,1)[12]")
-pd.Series(forecast_c).plot(ax = axes[0,0], label="ARIMA(1,0,0)(1,1,1)[12]")
+pd.Series(forecast_a).plot(ax = axes[0,0], label="ARIMA(0,0,0)(1,1,1)[12]")
+pd.Series(forecast_b).plot(ax = axes[0,0], label="ARIMA(0,0,0)(2,1,1)[12]")
 axes[0,0].legend() 
 
 i = 12
@@ -154,12 +142,10 @@ i = 12
 real_values = matrix_real[i]
 forecast_a = matrix_a[i]
 forecast_b = matrix_b[i]
-forecast_c = matrix_c[i]
 
 real_values.plot(ax = axes[0,1], label="Real")
-pd.Series(forecast_a).plot(ax = axes[0,1], label="ARIMA(0,0,0)(0,1,1)[12]")
-pd.Series(forecast_b).plot(ax = axes[0,1], label="ARIMA(0,0,0)(1,1,1)[12]")
-pd.Series(forecast_c).plot(ax = axes[0,1], label="ARIMA(1,0,0)(1,1,1)[12]")
+pd.Series(forecast_a).plot(ax = axes[0,1], label="ARIMA(0,0,0)(1,1,1)[12]")
+pd.Series(forecast_b).plot(ax = axes[0,1], label="ARIMA(0,0,0)(2,1,1)[12]")
 axes[0,1].legend() 
 
 i = 24
@@ -167,12 +153,10 @@ i = 24
 real_values = matrix_real[i]
 forecast_a = matrix_a[i]
 forecast_b = matrix_b[i]
-forecast_c = matrix_c[i]
 
 real_values.plot(ax = axes[1,0], label="Real")
-pd.Series(forecast_a).plot(ax = axes[1,0], label="ARIMA(0,0,0)(0,1,1)[12]")
-pd.Series(forecast_b).plot(ax = axes[1,0], label="ARIMA(0,0,0)(1,1,1)[12]")
-pd.Series(forecast_c).plot(ax = axes[1,0], label="ARIMA(1,0,0)(1,1,1)[12]")
+pd.Series(forecast_a).plot(ax = axes[1,0], label="ARIMA(0,0,0)(1,1,1)[12]")
+pd.Series(forecast_b).plot(ax = axes[1,0], label="ARIMA(0,0,0)(2,1,1)[12]")
 axes[1,0].legend() 
 
 i = 36
@@ -180,12 +164,11 @@ i = 36
 real_values = matrix_real[i]
 forecast_a = matrix_a[i]
 forecast_b = matrix_b[i]
-forecast_c = matrix_c[i]
 
 real_values.plot(ax = axes[1,1], label="Real")
-pd.Series(forecast_a).plot(ax = axes[1,1], label="ARIMA(0,0,0)(0,0,1)[12]")
-pd.Series(forecast_b).plot(ax = axes[1,1], label="ARIMA(0,0,0)(1,1,1)[12]")
-pd.Series(forecast_c).plot(ax = axes[1,1], label="ARIMA(1,0,0)(1,1,1)[12]")
+pd.Series(forecast_a).plot(ax = axes[1,1], label="ARIMA(0,0,0)(1,0,1)[12]")
+pd.Series(forecast_b).plot(ax = axes[1,1], label="ARIMA(0,0,0)(2,1,1)[12]")
+
 axes[1,1].legend() 
 
 plt.show()
