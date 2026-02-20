@@ -5,6 +5,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.arima.model import ARIMA
 from scipy.stats import shapiro
 from statsmodels.stats.diagnostic import acorr_ljungbox
+import numpy as np
 
 rainfall_data = pd.read_csv("Rainfall_data.csv")
 
@@ -74,11 +75,8 @@ fit_2 = ARIMA(Mumbai, order = (0,0,0), seasonal_order=(2,1,1,12)).fit()
 print(fit_1.aicc)
 print(fit_2.aicc)
 
-print(shapiro(fit_1.resid))
-print(shapiro(fit_2.resid))
-
-print(acorr_ljungbox(fit_1.resid, lags=12))
-print(acorr_ljungbox(fit_2.resid, lags=12))
+print(acorr_ljungbox(fit_1.resid, lags=[12, 24]))
+print(acorr_ljungbox(fit_2.resid, lags=[12,24]))
 
 fig, axes = plt.subplots(2, 2)
 
@@ -173,4 +171,5 @@ axes[1,1].legend()
 
 plt.show()
 
-
+print(np.mean((np.array(matrix_a) - np.array(matrix_real))**2))
+print(np.mean((np.array(matrix_b) - np.array(matrix_real))**2))
